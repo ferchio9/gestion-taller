@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Citas · Taller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css?v=10">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Taller · Panel operativo</div>
+    <h1>Citas</h1>
+    <nav>
+      <a href="/">Panel</a>
+      <a href="/ordenes.html">Reparaciones</a>
+      <a href="/crear.html">Nueva reparación</a>
+      <a href="/citas.html" class="activo">Citas</a>
+      <a href="/registros.html">Fichas</a>
+      <a href="#" class="logout" id="btnLogout">Cerrar sesión</a>
+    </nav>
+    <div class="aviso demo" id="aviso">Sin conexión con el servidor: se muestran datos de ejemplo y los cambios no se guardan.</div>
+  </header>
+
+  <div class="semana-nav">
+    <button class="btn secundario" id="btnSemanaAnterior" type="button">← Semana anterior</button>
+    <span class="rango" id="rangoSemana"></span>
+    <button class="btn secundario" id="btnSemanaSiguiente" type="button">Semana siguiente →</button>
+    <button class="btn primario" id="btnNuevaCita" type="button">+ Nueva cita</button>
+  </div>
+
+  <div class="semana" id="semana"></div>
+
+  <footer>Citas</footer>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<script src="/js/comun.js?v=10"></script>
+<script src="/js/alta.js?v=10"></script>
+<script src="/js/citas.js?v=10"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva orden de reparación · Taller</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css?v=10">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Taller · Panel operativo</div>
+    <h1 id="titulo">Nueva orden de reparación</h1>
+    <nav>
+      <a href="/">Panel</a>
+      <a href="/ordenes.html">Reparaciones</a>
+      <a href="/crear.html" class="activo">Nueva reparación</a>
+      <a href="/citas.html">Citas</a>
+      <a href="/registros.html">Fichas</a>
+      <a href="#" class="logout" id="btnLogout">Cerrar sesión</a>
+    </nav>
+    <div class="aviso demo" id="avisoDemo">Sin conexión con el servidor: se muestran datos de ejemplo y los cambios no se guardan.</div>
+    <div class="aviso error" id="avisoError"></div>
+  </header>
+
+  <div class="tarjeta">
+    <div class="campo">
+      <label for="vehiculo">Vehículo</label>
+      <input id="buscarVeh" type="search" placeholder="Buscar por matrícula, marca o propietario" style="margin-bottom:8px">
+      <select id="vehiculo"><option value="">Cargando…</option></select>
+      <button class="btn linea" id="btnNuevoVeh" type="button" style="margin-top:8px">+ Nuevo vehículo</button>
+      <div class="ayuda">¿No aparece? Pulsa «+ Nuevo vehículo» para darlo de alta sin salir de aquí.</div>
+    </div>
+    <div class="fila2">
+      <div class="campo">
+        <label for="estado">Estado</label>
+        <select id="estado"></select>
+      </div>
+      <div class="campo">
+        <label for="km">Kilómetros de entrada</label>
+        <input id="km" type="number" min="0" step="1" placeholder="Ej. 82000">
+      </div>
+    </div>
+    <div class="campo">
+      <label for="problema">Avería o motivo de entrada</label>
+      <textarea id="problema" maxlength="1000" placeholder="Describe la avería o el trabajo a realizar"></textarea>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <div class="rotulo">Conceptos</div>
+    <table>
+      <thead><tr>
+        <th>Concepto</th><th>Tipo</th><th class="n">Cant.</th><th class="n">Precio</th><th class="n">Importe</th><th></th>
+      </tr></thead>
+      <tbody id="cuerpoLineas"></tbody>
+    </table>
+    <button class="btn linea" id="btnAnadir" type="button">+ Añadir concepto</button>
+    <div class="total"><span>Total</span><b id="total">0,00 €</b></div>
+  </div>
+
+  <div class="acciones">
+    <button class="btn secundario" id="btnCancelar" type="button">Cancelar</button>
+    <button class="btn primario" id="btnGuardar" type="button">Guardar</button>
+  </div>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<script src="/js/comun.js?v=10"></script>
+<script src="/js/alta.js?v=10"></script>
+<script src="/js/crear.js?v=10"></script>
+</body>
+</html>
