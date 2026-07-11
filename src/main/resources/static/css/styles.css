@@ -41,6 +41,7 @@ nav a.logout{margin-left:auto}
 .aviso.on{display:block}
 .aviso.demo{background:#FEF3E2;border:1px solid #F3D9A9;color:#8A5A12}
 .aviso.error{background:#FCE8E7;border:1px solid #F1C4C1;color:var(--danger)}
+.aviso.ok{background:#E9F5EC;border:1px solid #BFE3C8;color:#1E7A34}
 
 /* ---- Secciones y rótulos ---- */
 section{margin-top:22px}

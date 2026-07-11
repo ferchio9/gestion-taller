@@ -82,9 +82,14 @@ async function abrirDetalle(id){
 }
 
 // Mismo patrón que crear.js: un único aviso rojo fijo en la cabecera de la página.
+function mostrarAviso(msg, tipo){
+  const el = $("avisoError");
+  el.textContent = msg;
+  el.classList.remove("error", "ok");
+  el.classList.add(tipo || "error", "on");
+}
 function mostrarError(msg){
-  $("avisoError").textContent = msg;
-  $("avisoError").classList.add("on");
+  mostrarAviso(msg, "error");
 }
 function limpiarError(){
   $("avisoError").classList.remove("on");
@@ -104,11 +109,11 @@ function copiarEnlaceCliente(codigoSeguimiento){
   const enlace = location.origin + "/seguimiento.html?codigo=" + codigoSeguimiento;
   if (navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(enlace).then(
-      () => alert("Enlace copiado:\n" + enlace),
-      () => alert("No se ha podido copiar. Enlace:\n" + enlace)
+      () => mostrarAviso("Enlace copiado: " + enlace, "ok"),
+      () => mostrarError("No se ha podido copiar. Enlace: " + enlace)
     );
   } else {
-    alert("Enlace para el cliente:\n" + enlace);
+    mostrarAviso("Enlace para el cliente: " + enlace, "ok");
   }
 }
 

@@ -36,9 +36,21 @@ Portal de seguimiento público (sin login), accesible por enlace único desde cu
 - **PDF**: OpenPDF.
 - **Frontend**: HTML/CSS/JS sin frameworks, servido como estáticos desde el propio backend.
 
-## Cómo arrancarlo en local
+## Cómo arrancarlo
 
-Requisitos: JDK 21, una instancia de Oracle accesible (por ejemplo Oracle XE en Docker) con un usuario/esquema ya creado.
+### Con Docker (recomendado, no requiere Oracle instalado)
+
+```bash
+docker compose up --build
+```
+
+Levanta Oracle XE 21c y la aplicación juntos. La primera vez tarda un poco más (Oracle inicializa su datafile). Cuando el contenedor `oracle` aparezca como `healthy`, abre `http://localhost:8080/login.html`.
+
+Sin configurar nada, usa `changeme` como contraseña para todo (solo vale para probarlo en local). Para cualquier otro uso, defínelas antes con variables de entorno: `DB_PASSWORD`, `ADMIN_PASSWORD`, `ORACLE_SYSTEM_PASSWORD`.
+
+### En local, sin Docker
+
+Requisitos: JDK 21, una instancia de Oracle accesible con un usuario/esquema ya creado.
 
 1. Configura la conexión. Por defecto, la app apunta a `localhost:1521/XEPDB1` con usuario `taller`. Puedes sobrescribir cualquier valor con variables de entorno, sin tocar el código:
 
@@ -57,6 +69,14 @@ Requisitos: JDK 21, una instancia de Oracle accesible (por ejemplo Oracle XE en 
 
 3. Abre `http://localhost:8080/login.html`. En el primer arranque se crea automáticamente un usuario administrador (`admin` / la contraseña de `ADMIN_PASSWORD`, o `CambiaEstaClave123` si no se define).
 
+### Tests
+
+```bash
+./mvnw test
+```
+
+No requiere Oracle: el smoke test de arranque usa una base de datos H2 en memoria.
+
 ## Estructura del proyecto
 
 ```
@@ -72,3 +92,7 @@ src/main/resources/
 ├── application.properties
 └── static/       # Frontend (HTML/CSS/JS)
 ```
+
+## Licencia
+
+MIT — ver [LICENSE](LICENSE).

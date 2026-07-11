@@ -131,8 +131,17 @@ function onCitaGuardada(){
   cargar().then(render);
 }
 
+function mostrarError(msg){
+  $("avisoError").textContent = msg;
+  $("avisoError").classList.add("on");
+}
+function limpiarError(){
+  $("avisoError").classList.remove("on");
+}
+
 async function borrarCita(id){
   if (!confirm("¿Borrar esta cita?")) return;
+  limpiarError();
   if (modoDemo){ CITAS = CITAS.filter(c => c.idCita !== id); cerrarAlta(); render(); return; }
   try{
     const r = await fetch("/api/citas/" + id, {method:"DELETE"});
@@ -140,7 +149,7 @@ async function borrarCita(id){
     cerrarAlta();
     await cargar();
     render();
-  }catch(e){ alert("No se ha podido borrar la cita."); }
+  }catch(e){ mostrarError("No se ha podido borrar la cita."); }
 }
 
 function cambiarSemana(delta){
