@@ -5,6 +5,8 @@ import com.taller.gestion.dto.UsuarioResponse;
 import com.taller.gestion.exception.ConflictoException;
 import com.taller.gestion.model.Usuario;
 import com.taller.gestion.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Service
 public class UsuarioService {
+
+    private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -31,7 +35,10 @@ public class UsuarioService {
         u.setUsername(req.username());
         u.setPasswordHash(passwordEncoder.encode(req.password()));
         u.setRol(req.rol());
-        return toResponse(usuarioRepository.save(u));
+        Usuario guardado = usuarioRepository.save(u);
+        log.info("Usuario creado: id={}, username={}, rol={}",
+                guardado.getIdUsuario(), guardado.getUsername(), guardado.getRol());
+        return toResponse(guardado);
     }
 
     @Transactional(readOnly = true)

@@ -13,6 +13,8 @@ import com.taller.gestion.repository.OrdenReparacionRepository;
 import com.taller.gestion.repository.ServicioRepository;
 import com.taller.gestion.repository.UsuarioRepository;
 import com.taller.gestion.repository.VehiculoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ import java.util.List;
 
 @Service
 public class OrdenReparacionService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrdenReparacionService.class);
 
     private final OrdenReparacionRepository ordenRepository;
     private final VehiculoRepository vehiculoRepository;
@@ -59,12 +63,14 @@ public class OrdenReparacionService {
         anadirLineas(orden, req.lineas());
 
         // Al guardar la orden se guardan sus lineas en cascada.
-        return toResponse(ordenRepository.save(orden));
+        OrdenReparacion guardada = ordenRepository.save(orden);
+        log.info("Orden de reparación creada: id={}, idVehiculo={}", guardada.getIdOrden(), vehiculo.getIdVehiculo());
+        return toResponse(guardada);
     }
 
     @Transactional(readOnly = true)
     public List<OrdenResponse> listar() {
-        return ordenRepository.findAll().stream().map(this::toResponse).toList();
+        return ordenRepository.findAllConVehiculoYLineas().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
@@ -93,7 +99,9 @@ public class OrdenReparacionService {
         orden.getLineas().clear();
         anadirLineas(orden, req.lineas());
 
-        return toResponse(ordenRepository.save(orden));
+        OrdenResponse resultado = toResponse(ordenRepository.save(orden));
+        log.info("Orden de reparación actualizada: id={}", id);
+        return resultado;
     }
 
     @Transactional
@@ -107,6 +115,7 @@ public class OrdenReparacionService {
         }
         OrdenResponse resultado = toResponse(ordenRepository.save(orden));
         registrarAuditoria(orden, estadoAnterior, nuevoEstado);
+        log.info("Cambio de estado de orden: id={}, {} -> {}", id, estadoAnterior, nuevoEstado);
         return resultado;
     }
 
@@ -140,6 +149,7 @@ public class OrdenReparacionService {
     public void eliminar(Long id) {
         // Al borrar la orden, sus lineas se borran en cascada.
         ordenRepository.delete(buscar(id));
+        log.info("Orden de reparación eliminada: id={}", id);
     }
 
     // readOnly: solo lee. Se mantiene la transaccion abierta mientras el generador
@@ -148,50 +158,6 @@ public class OrdenReparacionService {
     public byte[] generarPdf(Long id) {
         OrdenReparacion orden = buscar(id);
         return pdfGenerator.generar(orden);
-    }
-
-    // ---------- portal de seguimiento publico (sin login) ----------
-
-    @Transactional(readOnly = true)
-    public SeguimientoResponse obtenerSeguimiento(String codigo) {
-        OrdenReparacion orden = buscarPorCodigo(codigo);
-        Vehiculo vehiculo = orden.getVehiculo();
-
-        List<LineaResponse> lineas = orden.getLineas().stream().map(this::toLineaResponse).toList();
-        BigDecimal total = lineas.stream().map(LineaResponse::importe).reduce(BigDecimal.ZERO, BigDecimal::add);
-        List<CambioEstadoResponse> historial = cambioEstadoRepository
-                .findByOrden_IdOrdenOrderByFechaDesc(orden.getIdOrden()).stream()
-                .map(c -> new CambioEstadoResponse(c.getFecha(), c.getEstadoAnterior(), c.getEstadoNuevo(), c.getUsuario().getUsername()))
-                .toList();
-
-        return new SeguimientoResponse(
-                vehiculo.getMatricula(),
-                vehiculo.getMarca(),
-                vehiculo.getModelo(),
-                vehiculo.getTipo(),
-                vehiculo.getCliente().getNombre(),
-                orden.getEstado(),
-                orden.getFechaEntrada(),
-                orden.getFechaSalida(),
-                orden.getDescripcionProblema(),
-                total,
-                lineas,
-                orden.getPresupuestoAprobado(),
-                orden.getPresupuestoRespondidoEn(),
-                historial);
-    }
-
-    @Transactional
-    public void responderPresupuesto(String codigo, boolean aprobado) {
-        OrdenReparacion orden = buscarPorCodigo(codigo);
-        orden.setPresupuestoAprobado(aprobado);
-        orden.setPresupuestoRespondidoEn(LocalDateTime.now());
-        ordenRepository.save(orden);
-    }
-
-    @Transactional(readOnly = true)
-    public byte[] generarPdfPorCodigo(String codigo) {
-        return pdfGenerator.generar(buscarPorCodigo(codigo));
     }
 
     // ---------- helpers ----------
@@ -217,12 +183,6 @@ public class OrdenReparacionService {
         return ordenRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "No existe ninguna orden de reparación con el identificador " + id));
-    }
-
-    private OrdenReparacion buscarPorCodigo(String codigo) {
-        return ordenRepository.findByCodigoSeguimiento(codigo)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "No existe ninguna orden de reparación con ese código de seguimiento"));
     }
 
     private Vehiculo buscarVehiculo(Long idVehiculo) {

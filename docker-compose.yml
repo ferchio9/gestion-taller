@@ -27,6 +27,12 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/login.html"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
 
 volumes:
   oracle-data:

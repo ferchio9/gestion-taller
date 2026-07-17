@@ -46,13 +46,13 @@ docker compose up --build
 
 Levanta Oracle XE 21c y la aplicación juntos. La primera vez tarda un poco más (Oracle inicializa su datafile). Cuando el contenedor `oracle` aparezca como `healthy`, abre `http://localhost:8080/login.html`.
 
-Sin configurar nada, usa `changeme` como contraseña para todo (solo vale para probarlo en local). Para cualquier otro uso, defínelas antes con variables de entorno: `DB_PASSWORD`, `ADMIN_PASSWORD`, `ORACLE_SYSTEM_PASSWORD`.
+Sin configurar nada, `docker-compose.yml` usa `changeme` como contraseña para todo (solo vale para probarlo en local). Para cualquier otro uso, defínelas antes con variables de entorno: `DB_PASSWORD`, `ADMIN_PASSWORD`, `ORACLE_SYSTEM_PASSWORD`.
 
 ### En local, sin Docker
 
 Requisitos: JDK 21, una instancia de Oracle accesible con un usuario/esquema ya creado.
 
-1. Configura la conexión. Por defecto, la app apunta a `localhost:1521/XEPDB1` con usuario `taller`. Puedes sobrescribir cualquier valor con variables de entorno, sin tocar el código:
+1. Configura la conexión. Por defecto, la app apunta a `localhost:1521/XEPDB1` con usuario `taller`. `DB_URL` y `DB_USER` tienen valores por defecto y pueden sobrescribirse; `DB_PASSWORD` y `ADMIN_PASSWORD` son **obligatorias** (sin valor por defecto): la app no arranca si no están definidas, para evitar desplegar con una contraseña trivial.
 
    ```bash
    export DB_URL="jdbc:oracle:thin:@localhost:1521/XEPDB1"
@@ -67,7 +67,7 @@ Requisitos: JDK 21, una instancia de Oracle accesible con un usuario/esquema ya 
    ./mvnw spring-boot:run
    ```
 
-3. Abre `http://localhost:8080/login.html`. En el primer arranque se crea automáticamente un usuario administrador (`admin` / la contraseña de `ADMIN_PASSWORD`, o `CambiaEstaClave123` si no se define).
+3. Abre `http://localhost:8080/login.html`. En el primer arranque se crea automáticamente un usuario administrador (`admin` / la contraseña de `ADMIN_PASSWORD`).
 
 ### Tests
 
@@ -92,6 +92,10 @@ src/main/resources/
 ├── application.properties
 └── static/       # Frontend (HTML/CSS/JS)
 ```
+
+## Mejoras futuras
+
+- El esquema de base de datos se gestiona hoy con `spring.jpa.hibernate.ddl-auto=update` (sin herramienta de migraciones). Adoptar Flyway o Liquibase daría control de versiones sobre el esquema y evitaría el parche manual de `MigracionDatosRunner`, a costa de escribir migraciones explícitas para el histórico ya existente.
 
 ## Licencia
 

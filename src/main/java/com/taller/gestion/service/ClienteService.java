@@ -5,6 +5,8 @@ import com.taller.gestion.dto.ClienteResponse;
 import com.taller.gestion.exception.RecursoNoEncontradoException;
 import com.taller.gestion.model.Cliente;
 import com.taller.gestion.repository.ClienteRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Service
 public class ClienteService {
+
+    private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
     private final ClienteRepository clienteRepository;
 
@@ -27,7 +31,9 @@ public class ClienteService {
         cliente.setTelefono(req.telefono());
         cliente.setEmail(req.email());
         cliente.setNifCif(req.nifCif());
-        return toResponse(clienteRepository.save(cliente));
+        Cliente guardado = clienteRepository.save(cliente);
+        log.info("Cliente creado: id={}", guardado.getIdCliente());
+        return toResponse(guardado);
     }
 
     @Transactional(readOnly = true)
@@ -47,12 +53,15 @@ public class ClienteService {
         cliente.setTelefono(req.telefono());
         cliente.setEmail(req.email());
         cliente.setNifCif(req.nifCif());
-        return toResponse(clienteRepository.save(cliente));
+        ClienteResponse resultado = toResponse(clienteRepository.save(cliente));
+        log.info("Cliente actualizado: id={}", id);
+        return resultado;
     }
 
     @Transactional
     public void eliminar(Long id) {
         clienteRepository.delete(buscar(id));
+        log.info("Cliente eliminado: id={}", id);
     }
 
     // ---------- helpers ----------

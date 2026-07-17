@@ -8,6 +8,8 @@ import com.taller.gestion.model.Cliente;
 import com.taller.gestion.model.LineaOrden;
 import com.taller.gestion.model.OrdenReparacion;
 import com.taller.gestion.model.Vehiculo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.awt.Color;
@@ -22,6 +24,8 @@ import java.util.Map;
 // no accede a la base de datos (eso lo hace OrdenReparacionService antes de llamar aquí).
 @Component
 public class PdfOrdenGenerator {
+
+    private static final Logger log = LoggerFactory.getLogger(PdfOrdenGenerator.class);
 
     private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FECHA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -63,6 +67,7 @@ public class PdfOrdenGenerator {
 
             doc.close();
         } catch (DocumentException e) {
+            log.error("Error generando el PDF de la orden id={}", orden.getIdOrden(), e);
             throw new RuntimeException("No se ha podido generar el PDF de la orden", e);
         }
         return salida.toByteArray();

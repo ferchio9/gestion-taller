@@ -7,6 +7,8 @@ import com.taller.gestion.model.Cita;
 import com.taller.gestion.model.Vehiculo;
 import com.taller.gestion.repository.CitaRepository;
 import com.taller.gestion.repository.VehiculoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Service
 public class CitaService {
+
+    private static final Logger log = LoggerFactory.getLogger(CitaService.class);
 
     private final CitaRepository citaRepository;
     private final VehiculoRepository vehiculoRepository;
@@ -33,14 +37,16 @@ public class CitaService {
         if (req.estado() != null) {
             cita.setEstado(req.estado());
         }
-        return toResponse(citaRepository.save(cita));
+        Cita guardada = citaRepository.save(cita);
+        log.info("Cita creada: id={}", guardada.getIdCita());
+        return toResponse(guardada);
     }
 
     @Transactional(readOnly = true)
     public List<CitaResponse> listar(LocalDateTime desde, LocalDateTime hasta) {
         List<Cita> citas = (desde != null && hasta != null)
-                ? citaRepository.findByFechaHoraBetween(desde, hasta)
-                : citaRepository.findAll();
+                ? citaRepository.findByFechaHoraBetweenConVehiculoYCliente(desde, hasta)
+                : citaRepository.findAllConVehiculoYCliente();
         return citas.stream().map(this::toResponse).toList();
     }
 
@@ -53,12 +59,15 @@ public class CitaService {
         if (req.estado() != null) {
             cita.setEstado(req.estado());
         }
-        return toResponse(citaRepository.save(cita));
+        CitaResponse resultado = toResponse(citaRepository.save(cita));
+        log.info("Cita actualizada: id={}", id);
+        return resultado;
     }
 
     @Transactional
     public void eliminar(Long id) {
         citaRepository.delete(buscar(id));
+        log.info("Cita eliminada: id={}", id);
     }
 
     @Transactional(readOnly = true)
@@ -75,7 +84,9 @@ public class CitaService {
         Cita cita = buscar(id);
         cita.setIdOrdenGenerada(idOrden);
         cita.setEstado("COMPLETADA");
-        return toResponse(citaRepository.save(cita));
+        CitaResponse resultado = toResponse(citaRepository.save(cita));
+        log.info("Cita convertida en orden: idCita={}, idOrden={}", id, idOrden);
+        return resultado;
     }
 
     private Cita buscar(Long id) {

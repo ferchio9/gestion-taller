@@ -8,6 +8,8 @@ import com.taller.gestion.model.Cliente;
 import com.taller.gestion.model.Vehiculo;
 import com.taller.gestion.repository.ClienteRepository;
 import com.taller.gestion.repository.VehiculoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Service
 public class VehiculoService {
+
+    private static final Logger log = LoggerFactory.getLogger(VehiculoService.class);
 
     private final VehiculoRepository vehiculoRepository;
     private final ClienteRepository clienteRepository;
@@ -36,12 +40,14 @@ public class VehiculoService {
         Vehiculo v = new Vehiculo();
         aplicar(v, req);
         v.setCliente(cliente);
-        return toResponse(vehiculoRepository.save(v));
+        Vehiculo guardado = vehiculoRepository.save(v);
+        log.info("Vehículo creado: id={}, matrícula={}", guardado.getIdVehiculo(), guardado.getMatricula());
+        return toResponse(guardado);
     }
 
     @Transactional(readOnly = true)
     public List<VehiculoResponse> listar() {
-        return vehiculoRepository.findAll().stream().map(this::toResponse).toList();
+        return vehiculoRepository.findAllConCliente().stream().map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
@@ -68,12 +74,15 @@ public class VehiculoService {
         }
         aplicar(v, req);
         v.setCliente(buscarCliente(req.idCliente()));
-        return toResponse(vehiculoRepository.save(v));
+        VehiculoResponse resultado = toResponse(vehiculoRepository.save(v));
+        log.info("Vehículo actualizado: id={}", id);
+        return resultado;
     }
 
     @Transactional
     public void eliminar(Long id) {
         vehiculoRepository.delete(buscar(id));
+        log.info("Vehículo eliminado: id={}", id);
     }
 
     // ---------- helpers ----------

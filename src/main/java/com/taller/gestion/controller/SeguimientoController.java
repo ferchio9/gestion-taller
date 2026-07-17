@@ -2,7 +2,7 @@ package com.taller.gestion.controller;
 
 import com.taller.gestion.dto.AprobacionRequest;
 import com.taller.gestion.dto.SeguimientoResponse;
-import com.taller.gestion.service.OrdenReparacionService;
+import com.taller.gestion.service.SeguimientoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,27 +15,27 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/seguimiento")
 public class SeguimientoController {
 
-    private final OrdenReparacionService ordenService;
+    private final SeguimientoService seguimientoService;
 
-    public SeguimientoController(OrdenReparacionService ordenService) {
-        this.ordenService = ordenService;
+    public SeguimientoController(SeguimientoService seguimientoService) {
+        this.seguimientoService = seguimientoService;
     }
 
     @GetMapping("/{codigo}")
     public SeguimientoResponse obtener(@PathVariable String codigo) {
-        return ordenService.obtenerSeguimiento(codigo);
+        return seguimientoService.obtenerSeguimiento(codigo);
     }
 
     @PutMapping("/{codigo}/presupuesto")
     public SeguimientoResponse responderPresupuesto(@PathVariable String codigo,
                                                       @Valid @RequestBody AprobacionRequest req) {
-        ordenService.responderPresupuesto(codigo, req.aprobado());
-        return ordenService.obtenerSeguimiento(codigo);
+        seguimientoService.responderPresupuesto(codigo, req.aprobado());
+        return seguimientoService.obtenerSeguimiento(codigo);
     }
 
     @GetMapping("/{codigo}/pdf")
     public ResponseEntity<byte[]> descargarPdf(@PathVariable String codigo) {
-        byte[] pdf = ordenService.generarPdfPorCodigo(codigo);
+        byte[] pdf = seguimientoService.generarPdfPorCodigo(codigo);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"orden-reparacion.pdf\"")

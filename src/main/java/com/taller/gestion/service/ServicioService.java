@@ -5,6 +5,8 @@ import com.taller.gestion.dto.ServicioResponse;
 import com.taller.gestion.exception.RecursoNoEncontradoException;
 import com.taller.gestion.model.Servicio;
 import com.taller.gestion.repository.ServicioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Service
 public class ServicioService {
+
+    private static final Logger log = LoggerFactory.getLogger(ServicioService.class);
 
     private final ServicioRepository servicioRepository;
 
@@ -25,7 +29,9 @@ public class ServicioService {
         s.setNombre(req.nombre());
         s.setTipo(req.tipo());
         s.setPrecioBase(req.precioBase());
-        return toResponse(servicioRepository.save(s));
+        Servicio guardado = servicioRepository.save(s);
+        log.info("Servicio creado: id={}", guardado.getIdServicio());
+        return toResponse(guardado);
     }
 
     @Transactional(readOnly = true)
@@ -44,12 +50,15 @@ public class ServicioService {
         s.setNombre(req.nombre());
         s.setTipo(req.tipo());
         s.setPrecioBase(req.precioBase());
-        return toResponse(servicioRepository.save(s));
+        ServicioResponse resultado = toResponse(servicioRepository.save(s));
+        log.info("Servicio actualizado: id={}", id);
+        return resultado;
     }
 
     @Transactional
     public void eliminar(Long id) {
         servicioRepository.delete(buscar(id));
+        log.info("Servicio eliminado: id={}", id);
     }
 
     private Servicio buscar(Long id) {
