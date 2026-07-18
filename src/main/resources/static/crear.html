@@ -9,12 +9,12 @@
 <title>Nueva orden de reparación · Taller</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/styles.css?v=11">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css?v=23">
 </head>
 <body>
 <div class="wrap">
-  <header>
+  <div class="pantalla-completa"><header>
     <div class="eyebrow">Taller · Panel operativo</div>
     <h1 id="titulo">Nueva orden de reparación</h1>
     <nav>
@@ -28,7 +28,9 @@
     <div class="aviso demo" id="avisoDemo">Sin conexión con el servidor: se muestran datos de ejemplo y los cambios no se guardan.</div>
     <div class="aviso error" id="avisoError"></div>
   </header>
+  </div>
 
+  <div class="pantalla-completa"><div class="lienzo-panel"><div class="lienzo-contenido">
   <div class="tarjeta">
     <div class="campo">
       <label for="vehiculo">Vehículo</label>
@@ -69,13 +71,14 @@
     <button class="btn secundario" id="btnCancelar" type="button">Cancelar</button>
     <button class="btn primario" id="btnGuardar" type="button">Guardar</button>
   </div>
+  </div></div></div>
 </div>
 
 <div class="backdrop" id="backdrop"></div>
 <aside class="drawer" id="drawer" aria-hidden="true"></aside>
 
-<script src="/js/comun.js?v=11"></script>
-<script src="/js/alta.js?v=11"></script>
-<script src="/js/crear.js?v=11"></script>
+<script src="/js/comun.js?v=23"></script>
+<script src="/js/alta.js?v=23"></script>
+<script src="/js/crear.js?v=23"></script>
 </body>
 </html>
